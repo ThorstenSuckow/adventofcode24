@@ -9,7 +9,6 @@ def process(input: list) -> int:
         row = input[i]
         safe = True
         listlen = len(row)
-        print(row)
         res = 0
         prev = -1
         for j in range(0, listlen):
