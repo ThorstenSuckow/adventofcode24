@@ -2,9 +2,9 @@ from fileinput import input
 import re
 
 V = [
-    [-1, -1], [0, -1], [1, -1],
-    [-1,  0],          [1,  0], 
-    [-1,  1], [0,  1], [1,  1] 
+    (-1, -1), (0, -1), (1, -1),
+    (-1,  0),          (1,  0), 
+    (-1,  1), (0,  1), (1,  1) 
 ]
 
 DIRS = ['t', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl']
@@ -143,11 +143,7 @@ def collect_pivots(ch: str, rows: list) -> list:
     return xs
 
 
-        #0       #1      #2
-    [-1, -1], [0, -1], [1, -1],
-    [-1,  0],          [1, 0], #3, 4
-    [-1,  1], [0,  1], [1, 1] 
-       #5        #6       #7
+
 def accelerate(dir) -> list:
     global V
     match dir:
