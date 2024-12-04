@@ -1,9 +1,14 @@
 from fileinput import input
 import re
 
+V = [
+    [-1, -1], [0, -1], [1, -1],
+    [-1,  0],          [1,  0], 
+    [-1,  1], [0,  1], [1,  1] 
+]
 
-DIRS = ['o0', 'o2', 'o3', 'o4', 'o6', 'o8', 'o9', 'o10']
-MAS_DIRS = ['o2', 'o4', 'o8', 'o10']
+DIRS = ['t', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl']
+MAS_DIRS = ['tr', 'br', 'bl', 'tl']
 
 
 def parse_input(file_name = "") -> list:
@@ -54,7 +59,7 @@ def walk(x: int, y: int, rows: list, dir: str):
     res = 0
     nxt = ''
     while XMAS.startswith(ch) and len(ch) < 4 and nxt is not None:
-        [u, v] = calc(x, y, dir)
+        [u, v] = accelerate(dir)
         x += u
         y += v
         nxt =  char_at(x, y, rows)   
@@ -100,16 +105,16 @@ def walk_mas(x: int, y: int, rows: list, dir: str):
 
     res = 0
     match dir:
-        case 'o2':
+        case 'tr':
             if char_at(x-1, y+1, rows) == 'M' and char_at(x+1, y-1, rows) == 'S':
                 res = 3 
-        case 'o4':
+        case 'br':
             if char_at(x-1, y-1, rows) == 'M' and char_at(x+1, y+1, rows) == 'S':
                 res = 3 
-        case 'o8':
+        case 'bl':
             if char_at(x+1, y-1, rows) == 'M' and char_at(x-1, y+1, rows) == 'S':
                 res = 3 
-        case 'o10':
+        case 'tl':
             if char_at(x+1, y+1, rows) == 'M' and char_at(x-1, y-1, rows) == 'S':
                 res = 3 
 
@@ -138,25 +143,30 @@ def collect_pivots(ch: str, rows: list) -> list:
     return xs
 
 
-def calc(x, y, dir) -> list:
-
+        #0       #1      #2
+    [-1, -1], [0, -1], [1, -1],
+    [-1,  0],          [1, 0], #3, 4
+    [-1,  1], [0,  1], [1, 1] 
+       #5        #6       #7
+def accelerate(dir) -> list:
+    global V
     match dir:
-        case 'o0':
-            return [0, -1]        
-        case 'o2':
-            return [+1, -1]        
-        case 'o3':
-            return [+1, 0]        
-        case 'o4':
-            return [+1, +1]        
-        case 'o6':
-            return [0, +1]        
-        case 'o8':
-            return [-1, +1]        
-        case 'o9':
-            return [-1, 0]        
-        case 'o10':
-            return [-1, -1]        
+        case 't':
+            return V[1]        
+        case 'tr':
+            return V[2]        
+        case 'r':
+            return V[4]        
+        case 'br':
+            return V[7]        
+        case 'b':
+            return V[6]        
+        case 'bl':
+            return V[5]        
+        case 'l':
+            return V[3]        
+        case 'tl':
+            return V[0]        
 
     raise Exception(f"dir {dir} not defined")    
 
