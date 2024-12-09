@@ -10,15 +10,18 @@ class Data:
         self.values = val
 
     def visit_nodes(self, n: "Node", result) -> int:
-        
         if n.left() and n.value() <= self.target_value:
             self.visit_nodes(n.left(), result)
         
-        if n.right() and  n.value() <= self.target_value:
+        if n.middle() and n.value() <= self.target_value:
+            self.visit_nodes(n.middle(), result)
+    
+        if n.right() and n.value() <= self.target_value:
             self.visit_nodes(n.right(), result)
         
-        if (n.left() is None and n.right() is None):
-            result.append(n.value())
+        if n.left() is None and n.right() is None and n.middle() is None:
+            if n.value() == self.target_value:
+                result.append(n.value())
 
     def process(self, n : "Node") -> int:
         self.result = []
@@ -35,9 +38,10 @@ class Node:
     lft = None
     rgt = None
     val = None
+    mid = None
     
     def __str__(self):
-        return f"{self.val} {self.lft} {self.rgt}"
+        return f"{self.val} L:({self.lft}) M:({self.mid}) L:({self.rgt})"
 
     def __init__(self, val):
         self.val = val
@@ -47,6 +51,15 @@ class Node:
     
     def right(self) -> "Node":
         return self.rgt
+    
+    def middle(self) -> "Node":
+        return self.mid
+    
+
+    def append_mid(self, mid: int) -> "Node":
+        self.mid = Node(int(str(self.val) + str(mid)))
+        return self
+
 
     def append_left(self, lft: int) -> "Node":
         self.lft = Node(self.val * lft)
@@ -88,22 +101,10 @@ PART 1
 def part1_process(data_list: list) -> int:
         
     
-    def insert(node, index):
-        if (index >= len(data.values)):
-            return 
-        
-        el = data.values[index]
-
-        node.append_left(el)
-        node.append_right(el)
-
-        insert(node.left(), index + 1)
-        insert(node.right(), index + 1)
-
     res = 0
     for data in data_list:
         node = Node(data.values[0])
-        insert(node, 1)
+        insert(node, 1, data, False)
         res += data.target_value if data.process(node) > 0 else 0
 
     return res       
@@ -113,11 +114,40 @@ def part1_process(data_list: list) -> int:
 '''
 PART 2
 '''
-def part2_process(data: list) -> int:
+def part2_process(data_list: list) -> int:
 
-    return 0
+
+    res = 0
+    for data in data_list:
+        node = Node(data.values[0])
+        insert(node, 1, data, True)
+        res += data.target_value if data.process(node) > 0 else 0
+
+    return res       
+
 
     
 '''
 HELPER
 '''
+
+
+def insert(node, index, data, use_middle = True):
+    
+    if (index >= len(data.values)):
+        return 
+    
+    el = data.values[index]
+
+    # optimization: if we detect an invalid branch,
+    # mark the node as invalid
+    # remove complete subtrees if *all* child nodes are invalid 
+    if use_middle is True:
+        node.append_mid(el)
+        insert(node.middle(), index + 1, data, use_middle)
+
+    node.append_left(el)
+    node.append_right(el)
+
+    insert(node.left(), index + 1, data, use_middle)
+    insert(node.right(), index + 1, data, use_middle)
