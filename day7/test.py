@@ -20,7 +20,7 @@ res = [
 
 class TestDay7(unittest.TestCase):
 
-    def t_est_node(self):
+    def test_node(self):
 
         n = Node(4)
 
