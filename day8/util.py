@@ -23,13 +23,16 @@ class Mesh:
                 for j in range(i + 1, len(grp)):
                     node_b = grp[j]
                     
-                    
                     v = (node_b[0] - node_a[0], node_b[1] - node_a[1])
                     
                     anode_b = (node_b[0] + v[0], node_b[1] + v[1])
                     anode_a = (node_a[0] - v[0], node_a[1] - v[1])
                     
-                  
+                    if self.in_bounds(anode_b) and anode_b not in antinodes:
+                        antinodes.append(anode_b)
+                    if self.in_bounds(anode_a) and anode_a not in antinodes:
+                        antinodes.append(anode_a)
+
                     if bounce is True:
 
                         # add antennas to list of antinodes
@@ -44,20 +47,12 @@ class Mesh:
                             if (anode_b not in antinodes):
                                 antinodes.append(anode_b)
                             anode_b = (anode_b[0] + v[0], anode_b[1] + v[1])   
-                        
+                            
                         while (self.in_bounds(anode_a)):
                             if (anode_a not in antinodes):
                                 antinodes.append(anode_a)
                             anode_a = (anode_a[0] - v[0], anode_a[1] - v[1])   
-                        
-                    else:        
-                        
-                        # dont bounce this point
-                        if self.in_bounds(anode_b) and anode_b not in antinodes:
-                            antinodes.append(anode_b)
-                        if self.in_bounds(anode_a) and anode_a not in antinodes:
-                            antinodes.append(anode_a)
-
+                            
         return antinodes
         
 
