@@ -4,36 +4,14 @@ import re
 class Data:
     target_value = None
     values = None
+    result = None
 
     def __init__(self, tv, val):
         self.target_value = tv
         self.values = val
+        self.result = 0
 
-    def visit_nodes(self, n: "Node", result) -> int:
-        if n.left() and n.value() <= self.target_value:
-            self.visit_nodes(n.left(), result)
-        
-        if n.middle() and n.value() <= self.target_value:
-            self.visit_nodes(n.middle(), result)
     
-        if n.right() and n.value() <= self.target_value:
-            self.visit_nodes(n.right(), result)
-        
-        if n.left() is None and n.right() is None and n.middle() is None:
-            if n.value() == self.target_value:
-                result.append(n.value())
-
-    def process(self, n : "Node") -> int:
-        self.result = []
-        self.visit_nodes(n, self.result)
-        res = 0
-        
-        for val in self.result:
-            if val == self.target_value:
-                res +=1
-
-        return res        
-
 class Node:
     lft = None
     rgt = None
@@ -105,7 +83,7 @@ def part1_process(data_list: list) -> int:
     for data in data_list:
         node = Node(data.values[0])
         insert(node, 1, data, False)
-        res += data.target_value if data.process(node) > 0 else 0
+        res += data.target_value if data.result > 0 else 0
 
     return res       
 
@@ -121,7 +99,7 @@ def part2_process(data_list: list) -> int:
     for data in data_list:
         node = Node(data.values[0])
         insert(node, 1, data, True)
-        res += data.target_value if data.process(node) > 0 else 0
+        res += data.target_value if data.result > 0 else 0
 
     return res       
 
@@ -135,19 +113,22 @@ HELPER
 def insert(node, index, data, use_middle = True):
     
     if (index >= len(data.values)):
+        if node.value() == data.target_value:
+            data.result += 1
         return 
     
     el = data.values[index]
 
-    # optimization: if we detect an invalid branch,
-    # mark the node as invalid
-    # remove complete subtrees if *all* child nodes are invalid 
     if use_middle is True:
         node.append_mid(el)
-        insert(node.middle(), index + 1, data, use_middle)
+        if node.middle().value() <= data.target_value:
+            insert(node.middle(), index + 1, data, use_middle)
 
     node.append_left(el)
     node.append_right(el)
 
-    insert(node.left(), index + 1, data, use_middle)
-    insert(node.right(), index + 1, data, use_middle)
+    if node.left().value() <= data.target_value:
+        insert(node.left(), index + 1, data, use_middle)
+    
+    if node.right().value() <= data.target_value:
+        insert(node.right(), index + 1, data, use_middle)

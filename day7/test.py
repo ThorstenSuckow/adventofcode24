@@ -4,7 +4,6 @@ from util import parse_input
 from util import part1_process
 from util import part2_process
 from util import Node, Data
-import itertools
 
 res = [
     [190, [10, 19]],
@@ -68,56 +67,7 @@ class TestDay7(unittest.TestCase):
 
         pass
 
-    def scratchpad(self):
-
-        target_value = 7290
-        values = [6, 8, 6, 15]
-
-        def partition_n(n):
-            res = []
-            j = 0
-            i = 1
-            while (i != n + 1):
-                grp = []
-            
-                grp.append(i)
-                for k in range(i, n):
-                    grp.append(1)
-                i += 1
-                j += 1
-                res.append(grp)
-            return res
-        
-        partitions = partition_n(len(values))
-
-        perms = []
-        for p in partitions:
-            #print(": ",p)
-            for comb in itertools.permutations(p, len(p)):
-                if comb not in perms:
-                    perms.append(comb)
-                    #print("-> ",comb)
-        
-        #print(perms)
-
-        fin = []
-        for p in perms:
-            
-            i = 0
-            d = Data(target_value, [])
-            for len_v in p:
-                v = ''
-                for j in range(0, len_v):
-                    v += str(values[i])
-                    i+=1
-                d.values.append(int(v))
-            fin.append(d)
-        
-        print(fin[2].values)
-
-        print(part1_process([fin[2]]))
-
-  
+     
 
 
 
