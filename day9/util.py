@@ -33,11 +33,10 @@ class Disk:
                 rchunk['val'] -=  strlen
                 chunk['free'] -= len(fill)
 
-            if rchunk['val'] == 0 and chunk['free'] == 0:
+            if chunk['free'] == 0:
                 left+=1
-                right-=1
-            elif rchunk['val'] > 0 and chunk['free'] == 0:
-                left+=1
+                if rchunk['val'] == 0:
+                    right-=1
             elif rchunk['val'] == 0 and chunk['free'] > 0:
                 right-=1
                 
@@ -83,8 +82,6 @@ class Disk:
             '''
             right -= 1
             left = 0
-
-        print("SKIPPED", skipped)
 
         return self.sum_chunks(data)
 
