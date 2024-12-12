@@ -49,7 +49,6 @@ class Disk:
         right = max_pos
         left = 0
         skip = []
-        skipped = 0
         while (right >= 0):
             rchunk = data[right]
             avail = rchunk['val']
