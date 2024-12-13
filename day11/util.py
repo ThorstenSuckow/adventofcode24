@@ -1,80 +1,41 @@
 from fileinput import input
 import re
 
-node_map = {}
+node_map = {} 
 
-class Node:
-    lft = None
-    rgt = None
-    val = None
+def count_blinks(value, blinks):
+
+    key = (value, blinks)
+
+    if node_map.get(key):
+        return node_map.get(key)
+
+    if blinks == -1:
+        return 0
     
-    def __str__(self):
-        return f"{self.val} L:({self.lft}) R:({self.rgt})"
-
-    def __init__(self, val):
-        self.val = val
-
-    def left(self) -> "Node":
-        return self.lft
+    vs = blink(value)
     
-    def right(self) -> "Node":
-        return self.rgt
+    res = len(vs) - 1
     
-
-    def append_left(self, lft: int) -> "Node":
-        self.lft = Node(lft)
-
-        if node_map.get(lft) is None:
-            node_map[lft] = self.lft
-        
-        return self.lft
-
-    def append_right(self, rgt: int) -> "Node":
-        self.rgt = Node(rgt)
-        
-        if node_map.get(rgt) is None:
-            node_map[rgt] = self.rgt
-
-        return self.rgt
+    for val in vs:    
+        res += count_blinks(val, blinks - 1)
     
-    def set_value(self, val):
-        self.val = val
-
-    def value(self):
-        return self.val
-
-    def leaf_count(self) -> int:
-        
-        if self.left() is None and self.right() is None:
-            return 1
-        
-        return  self.left().leaf_count() + self.right().leaf_count()
-
-    def blink(self) -> "Node":
-
-        if self.left():
-            self.left().blink()
-
-        if self.right():
-            self.right().blink()
-
-        if self.left() is None and self.right() is None:
-            vlen = len(str(self.value()))
-            hlf = int(vlen / 2)
-
-            if self.value() == 0:
-                self.set_value(1)
-            elif vlen % 2 == 0:
-                self.append_left(int(str(self.value())[:hlf]))
-                self.append_right(int(str(self.value())[hlf:]))
-            else:
-                self.set_value(self.value() * 2024)
-        
-        return self       
+    node_map[key] = res
+    return res
 
 
+def blink(value) -> int:    
 
+    vlen = len(str(value))
+    hlf = int(vlen / 2)
 
+    if value == 0:
+        return [1]
+    elif vlen % 2 == 0:
+        return [int(str(value)[:hlf]), int(str(value)[hlf:])]
+    else:
+        return [value * 2024]
+    
 def parse_input(file_name = "") -> list:
 
     if not file_name:
@@ -87,25 +48,17 @@ def parse_input(file_name = "") -> list:
 
     return data
 
-
 '''
 PART 1
 '''
-def part1_process(data: list, blink: int) -> int:
+def part1_process(data: list, blink_n: int) -> int:
 
-    nodes = []
-    print("->", blink)
-    res = 0
-    for i in data:
-        
-        n = Node(i)
-        for j in range(0, blink):
-            n.blink()
-        
-        c = n.leaf_count()
-        res += c
+    res = len(data)
+    for d in data:
+        res +=  count_blinks(d, blink_n -1)
 
     return res
+
 
 '''
 PART 2
