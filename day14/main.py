@@ -5,11 +5,12 @@ from util import part2_process
 
 def run(part: str):
     if part == "1":
-        # expected: 
+        # expected: 228421332
         print(part1_process(parse_input(), 101, 103, 100))
     if part == "2":
-        # expected: 
-        #print(part2_process(parse_input()))
+        # expected: 7790
+        print(part2_process(parse_input(), 101, 103, 7790))
+    
         pass
 
 

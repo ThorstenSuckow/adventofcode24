@@ -1,6 +1,6 @@
 from fileinput import input
-import re
-
+import re, sys, os, time
+import copy
 
 V = [
               (0, -1),
@@ -8,6 +8,65 @@ V = [
                (0,  1),  
 ]
 
+
+class Mesh: 
+
+    mesh = None
+    blueprint = None
+
+    def __str__(self):
+        mesh_str = ""
+
+        mesh = self.mesh
+
+        for y in range(0, len(mesh)):
+            for x in range(0, len(mesh[y])):
+                pos = self.mesh[y][x]
+                mesh_str += " " if  pos == 0 else str(pos)
+            mesh_str += "\n"
+
+        return mesh_str
+
+
+    def __init__(self, w: int, h: int):
+        self.mesh = []
+
+        mesh = self.mesh
+        for y in range(0, h):
+            mesh.append([])
+            for x in range(0, w):
+                mesh[y].append(0)
+
+        self.blueprint = copy.deepcopy(self.mesh)
+
+    def reset(self):
+        self.mesh = copy.deepcopy(self.blueprint)
+
+    def inc(self, x, y): 
+        self.mesh[y][x] += 1
+
+    def add(self, r: "Robot"):
+        self.inc(r.position[0], r.position[1])
+
+
+    def center_weighted(self, weight):
+        mesh = self.mesh
+        x_width = len(mesh[0])
+       
+        possible_match = False
+        for y in range(0, len(mesh)):
+            x = 0
+            sim = 0
+            for x in range(0, x_width - 1):
+                if mesh[y][x] != 0 and mesh[y][x+1] != 0:
+                    sim+=1
+                if sim > weight:
+                    possible_match = True
+                    break
+            
+        return possible_match
+
+            
 
 class Robot:
 
@@ -22,14 +81,15 @@ class Robot:
         self.id = id
         self.position = position
         self.velocity = velocity
+        self.start = position
         pass
 
     def __str__(self):
         return f"[{self.id}: {self.position}, {self.velocity}], w: {self.mesh_w}, h: {self.mesh_h}"
     
-    def place_in(self, w : int, h: int):
-        self.mesh_h = h
-        self.mesh_w = w
+    def place_in(self, mesh: "Mesh"):
+        self.mesh_h = len(mesh.mesh)
+        self.mesh_w = len(mesh.mesh[0])
 
     def teleport(self, ticks: int):
         x = self.position[0]
@@ -38,13 +98,13 @@ class Robot:
         vx = self.velocity[0]
         vy = self.velocity[1]
         
-        for tick in range(1, ticks + 1):
+        #for tick in range(1, ticks + 1):
             #print(x, y)
-            x = (x + vx) % (self.mesh_w)
-            y = (y + vy ) % (self.mesh_h)
+        x = (self.start[0] + ticks * vx) % (self.mesh_w)
+        y = (self.start[1] + ticks * vy ) % (self.mesh_h)
 
         self.position = (x, y)
-
+        
  
     def add_to_tile(self, tiles):
 
@@ -90,6 +150,7 @@ def parse_input(file_name = "") -> list:
 
     return robots
 
+
 '''
 PART 1
 '''
@@ -97,23 +158,42 @@ def part1_process(robots: list, mesh_w: int, mesh_h: int, teleport: int) -> int:
 
     res = 1
     tiles = [0, 0, 0 ,0]
+    
+    mesh = Mesh(mesh_w, mesh_h)
     for r in robots:
-        r.place_in(mesh_w, mesh_h)
+        r.place_in(mesh)
         r.teleport(teleport)
         r.add_to_tile(tiles)
-        
+
     for i in tiles:
         res *= i
 
     return res
-    pass
     
 
 
 '''
 PART 2
 '''
-def part2_process(robots: list) -> int:
+def part2_process(robots: list, mesh_w: int, mesh_h: int, frame: int) -> int:
+    
+    
+    mesh = Mesh(mesh_w, mesh_h)
+
+    for r in robots:
+        r.place_in(mesh)
+    
+    mesh.reset()
+    for r in robots:
+        r.teleport(frame)
+        mesh.add(r)
+    
+    if mesh.center_weighted(12):
+        os.system('CLS')
+        sys.stdout.write(f"Frame: {frame}\n{mesh}")
+        sys.stdout.flush()
+    else:
+        raise Exception("No similiarities found :(")  
     
     pass
     
