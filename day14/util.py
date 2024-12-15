@@ -2,11 +2,6 @@ from fileinput import input
 import re, sys, os, time
 import copy
 
-V = [
-              (0, -1),
-    (-1,  0),          (1,  0), 
-               (0,  1),  
-]
 
 
 class Mesh: 
@@ -48,7 +43,17 @@ class Mesh:
     def add(self, r: "Robot"):
         self.inc(r.position[0], r.position[1])
 
-
+    '''
+    find rows that contain sequences of "1" (or anything other than "0")
+    We could also use a mask that scans for tree shaped partitions,
+    e.g.
+    mask = [
+        [0, 0, 0, 1],
+        [0, 0, 1, 1],
+        [0, 1, 1, 1],
+        [1, 1, 1, 1]
+    ]
+    '''
     def center_weighted(self, weight):
         mesh = self.mesh
         x_width = len(mesh[0])
@@ -92,14 +97,9 @@ class Robot:
         self.mesh_w = len(mesh.mesh[0])
 
     def teleport(self, ticks: int):
-        x = self.position[0]
-        y = self.position[1]
-        
         vx = self.velocity[0]
         vy = self.velocity[1]
         
-        #for tick in range(1, ticks + 1):
-            #print(x, y)
         x = (self.start[0] + ticks * vx) % (self.mesh_w)
         y = (self.start[1] + ticks * vy ) % (self.mesh_h)
 
