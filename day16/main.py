@@ -5,7 +5,7 @@ from util import part2_process
 
 def run(part: str):
     if part == "1":
-        # expected: 
+        # expected: 91464
         print(part1_process(parse_input()))
     if part == "2":
         # expected: 

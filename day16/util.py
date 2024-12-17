@@ -174,43 +174,43 @@ def part1_process(mesh: Mesh) -> int:
     edges = mesh._edges
     nodes = mesh._nodes
     
-    g = Graph(len(nodes))
-
+    g = Graph(len(nodes), mesh._start, mesh._end)
     n = 0
     for node in nodes:
         g.add_vertex_data(n, node)
         n+= 1
-
     
     for edge in edges:
         l = edge.u
         r = edge.v
         lid = g.vertex_data.index(l)
         rid = g.vertex_data.index(r)
-        weight = 0
-            
-        g.add_edge(lid, rid, edge.weight + weight)
+        g.add_edge(lid, rid, edge.weight)
 
     start = mesh._start
     distances = g.dijkstra(start)
     for i, d in enumerate(distances):
         if g.vertex_data[i] == mesh._end:
-            #consider starting position
-            return d - 1000
+            return d
+
 
 '''
 PART 2
 '''
 def part2_process(mesh: Mesh) -> int:
     pass
-    
+
+
 '''
 HELPER
 '''
+# source: https://www.w3schools.com/dsa/dsa_algo_graphs_dijkstra.php
 class Graph:
-    def __init__(self, size):
+    def __init__(self, size, start, end):
         self.adj_matrix = [[0] * size for _ in range(size)]
         self.size = size
+        self.start = start
+        self. end = end
         self.vertex_data = [''] * size
 
     def add_edge(self, u, v, weight):
@@ -227,6 +227,7 @@ class Graph:
         distances = [float('inf')] * self.size
         distances[start_vertex] = 0
         visited = [False] * self.size
+        paths = []
 
         for _ in range(self.size):
             min_distance = float('inf')
@@ -240,15 +241,22 @@ class Graph:
                 break
             visited[u] = True
 
+            
             for v in range(self.size):
                 if self.adj_matrix[u][v] != 0 and not visited[v]:
                     add = 0
-                    # recalc movement
-                    if ((self.vertex_data[u][0] != self.vertex_data[v][0]) 
+                    
+                    # consider turns
+                    node = self.vertex_data[u]
+                    if node == start_vertex_data and self.vertex_data[v][1] == node[1]:
+                        add = 0
+                    elif ((self.vertex_data[u][0] != self.vertex_data[v][0]) 
                         or (self.vertex_data[u][1] != self.vertex_data[v][1])):
                         add = 1000
+                    
                     alt = distances[u] + self.adj_matrix[u][v] + add
                     if alt < distances[v]:
                         distances[v] = alt
+                        paths.append(self.vertex_data[v])
 
         return distances
