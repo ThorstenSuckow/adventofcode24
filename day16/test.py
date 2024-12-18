@@ -16,8 +16,7 @@ class Test(unittest.TestCase):
 
     
     def test_process_part2(self):
-        #[mesh, directions] = parse_input("test_input.txt", True)
-        #self.assertEqual(9021 ,part2_process(mesh, directions))
+        self.assertEqual(45, part2_process(parse_input("test_input.txt")))
         pass
 
 

@@ -8,9 +8,8 @@ def run(part: str):
         # expected: 91464
         print(part1_process(parse_input()))
     if part == "2":
-        # expected: 
-        #[mesh, directions] = parse_input(widen=True)
-        #print(part2_process(mesh, directions))
+        # expected: 494
+        print(part2_process(parse_input()))
         pass
 
 

@@ -128,7 +128,6 @@ class Mesh:
                         new_edge = Edge(node, (x, y))
                         if self.edge_exists(new_edge) == False:
                             edges.append(new_edge)
-                        
                     x += v[0]
                     y += v[1]
 
@@ -169,6 +168,60 @@ PART 1
 '''
 def part1_process(mesh: Mesh) -> int:
   
+    data = calc_paths(mesh)    
+
+    return data[0]
+
+
+
+'''
+PART 2
+'''
+def part2_process(mesh: Mesh) -> int:
+    
+    end = mesh._end
+
+    data = calc_paths(mesh)[1]    
+
+    def sum_paths(end, paths, points = []):
+
+        res = 0
+        for node in paths:
+            distx = abs(end[0] - node[0])
+            disty = abs(end[1] - node[1])
+            
+            x = end[0]
+            y = end[1]
+            for i in range(0, max(distx, disty)):
+                if distx != 0:
+                    x = x - 1 if end[0] >= node[0] else x + 1
+                else:
+                    y = y - 1 if end[1] >= node[1] else y + 1
+                
+                pos = (x, y)
+                if pos not in points:
+                    points.append(pos)
+                
+            if data.get(node):
+                sum_paths(node, data[node], points)
+        
+        return res
+
+        pass
+
+    points = []
+    sum_paths(end, data[end], points)
+    return len(set(points)) + 1
+
+    pass
+
+
+'''
+HELPER
+'''
+
+def calc_paths(mesh: Mesh):
+    
     mesh.init_nodes()
     mesh.init_edges()
     edges = mesh._edges
@@ -188,22 +241,14 @@ def part1_process(mesh: Mesh) -> int:
         g.add_edge(lid, rid, edge.weight)
 
     start = mesh._start
-    distances = g.dijkstra(start)
+    res = g.dijkstra(start)
+    distances = res[0]
     for i, d in enumerate(distances):
         if g.vertex_data[i] == mesh._end:
-            return d
+            return [d, res[1]]
+        
 
 
-'''
-PART 2
-'''
-def part2_process(mesh: Mesh) -> int:
-    pass
-
-
-'''
-HELPER
-'''
 # source: https://www.w3schools.com/dsa/dsa_algo_graphs_dijkstra.php
 class Graph:
     def __init__(self, size, start, end):
@@ -227,8 +272,7 @@ class Graph:
         distances = [float('inf')] * self.size
         distances[start_vertex] = 0
         visited = [False] * self.size
-        paths = []
-
+        paths = {}
         for _ in range(self.size):
             min_distance = float('inf')
             u = None
@@ -241,7 +285,6 @@ class Graph:
                 break
             visited[u] = True
 
-            
             for v in range(self.size):
                 if self.adj_matrix[u][v] != 0 and not visited[v]:
                     add = 0
@@ -253,10 +296,24 @@ class Graph:
                     elif ((self.vertex_data[u][0] != self.vertex_data[v][0]) 
                         or (self.vertex_data[u][1] != self.vertex_data[v][1])):
                         add = 1000
-                    
-                    alt = distances[u] + self.adj_matrix[u][v] + add
-                    if alt < distances[v]:
-                        distances[v] = alt
-                        paths.append(self.vertex_data[v])
 
-        return distances
+                    endnode = self.vertex_data[v]
+                    startnode = self.vertex_data[u]    
+
+                    alt = distances[u] + self.adj_matrix[u][v] + add
+                    # shorter path, re-init node list
+                    if alt < distances[v]:
+                        paths[endnode] = [startnode]
+                        distances[v] = alt
+                    if alt == distances[v]:
+                        # same path length, alternative path possible
+                        if startnode not in paths[endnode]:
+                            paths[endnode].append(startnode)
+                  
+                        pass
+            
+                        
+        #print(distances)
+        #for p in paths:
+            #print(p, paths[p])
+        return [distances, paths]
