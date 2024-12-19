@@ -1,5 +1,4 @@
 from fileinput import input
-from functools import cmp_to_key
 import sys, os, time, re
 
 
@@ -30,11 +29,6 @@ def parse_input(file_name = "") -> list:
 PART 1
 '''
 def part1_process(patterns: list, designs: list) -> int:
-  
-    test = designs[0]
-
-    patterns = sorted(patterns, key = cmp_to_key(lambda a, b: len(b) - len(a)))
-
 
     res = 0
     for design in designs:
@@ -58,10 +52,8 @@ def part2_process(patterns: list, designs: list) -> int:
 HELPER
 '''
 
-CACHE = []
-
 def is_valid(patterns:list , design: str, validated : str) -> bool:
-    global CACHE
+
 
     if (design in patterns):
         return True
@@ -71,7 +63,6 @@ def is_valid(patterns:list , design: str, validated : str) -> bool:
             sub = design[:-len(pattern)]
             validated = pattern + validated 
 
-            if sub == '': return True 
             if is_valid(patterns, sub, validated):
                 return True
     
