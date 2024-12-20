@@ -46,7 +46,6 @@ def part2_process(patterns: list, designs: list) -> int:
     res = 0
     for design in designs:
         res += is_valid(patterns, design)                    
-        
     return res
 
 
@@ -66,8 +65,8 @@ def is_valid(patterns:list , design: str, CACHE = {}) -> bool:
     for pattern in patterns:
         if design.endswith(pattern):
             t = is_valid(patterns, design[:-len(pattern)], CACHE)
+            res += t
             if t != 0:
-                res += t
                 cache(CACHE, design, t)  
 
     return res
