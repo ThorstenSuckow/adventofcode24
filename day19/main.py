@@ -8,7 +8,7 @@ def run(part: str):
         # expected: 336
         print(part1_process(*parse_input()))
     if part == "2":
-        # expected: 
+        # expected: 758890600222015
         print(part2_process(*parse_input()))
         pass
 

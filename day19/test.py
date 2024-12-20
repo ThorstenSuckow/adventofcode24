@@ -11,12 +11,15 @@ res = {
 class Test(unittest.TestCase):
 
     def test_process_part1(self):
-        self.assertEqual(6 ,part1_process(*parse_input("test_input.txt")))
+        [patterns, designs] = parse_input("test_input.txt")
+        self.assertEqual(6 ,part1_process(patterns, designs))
         pass
 
     
     def test_process_part2(self):
-        self.assertEqual(0, part2_process(*parse_input("test_input.txt")))
+        
+        [patterns, designs] = parse_input("test_input.txt")
+        self.assertEqual(16, part2_process(patterns, designs))
         pass
 
 

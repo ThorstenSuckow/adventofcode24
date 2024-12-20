@@ -1,6 +1,7 @@
 from fileinput import input
 import sys, os, time, re
-
+from functools import cmp_to_key
+import itertools
 
 
 def parse_input(file_name = "") -> list:
@@ -29,14 +30,12 @@ def parse_input(file_name = "") -> list:
 PART 1
 '''
 def part1_process(patterns: list, designs: list) -> int:
-
     res = 0
     for design in designs:
-        if is_valid(patterns, design, ''):
+        if is_valid(patterns, design) != 0:
             res += 1
-    
-    return res
 
+    return res
 
 
 '''
@@ -44,31 +43,38 @@ PART 2
 '''
 def part2_process(patterns: list, designs: list) -> int:
 
-    return 0
-
+    res = 0
+    for design in designs:
+        res += is_valid(patterns, design)                    
+        
+    return res
 
 
 '''
 HELPER
 '''
-
-def is_valid(patterns:list , design: str, validated : str) -> bool:
-
-
-    if (design in patterns):
-        return True
+def is_valid(patterns:list , design: str, CACHE = {}) -> bool:
     
+    res = 0
+
+    if design == '':
+        return 1
+
+    if CACHE.get(design) is not None:
+        return CACHE.get(design)
+
     for pattern in patterns:
         if design.endswith(pattern):
-            sub = design[:-len(pattern)]
-            validated = pattern + validated 
+            t = is_valid(patterns, design[:-len(pattern)], CACHE)
+            if t != 0:
+                res += t
+                cache(CACHE, design, t)  
 
-            if is_valid(patterns, sub, validated):
-                return True
-    
-    
-    return False
+    return res
 
-def test_pattern(pattern, design):
 
-    pass
+def cache(CACHE, design, val):
+    if CACHE.get(design) is None:
+        CACHE[design] = 0
+
+    CACHE[design] += val 
