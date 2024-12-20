@@ -31,8 +31,9 @@ PART 1
 '''
 def part1_process(patterns: list, designs: list) -> int:
     res = 0
+    CACHE = {}
     for design in designs:
-        if is_valid(patterns, design) != 0:
+        if is_valid(patterns, design, CACHE) != 0:
             res += 1
 
     return res
@@ -44,15 +45,16 @@ PART 2
 def part2_process(patterns: list, designs: list) -> int:
 
     res = 0
+    CACHE = {}
     for design in designs:
-        res += is_valid(patterns, design)                    
+        res += is_valid(patterns, design, CACHE)                    
     return res
 
 
 '''
 HELPER
 '''
-def is_valid(patterns:list , design: str, CACHE = {}) -> bool:
+def is_valid(patterns:list , design: str, CACHE: map) -> bool:
     
     res = 0
 
@@ -67,7 +69,7 @@ def is_valid(patterns:list , design: str, CACHE = {}) -> bool:
             t = is_valid(patterns, design[:-len(pattern)], CACHE)
             res += t
             if t != 0:
-                cache(CACHE, design, t)  
+                cache(CACHE, design, t)      
 
     return res
 
