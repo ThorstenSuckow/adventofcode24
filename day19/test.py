@@ -17,7 +17,6 @@ class Test(unittest.TestCase):
 
     
     def test_process_part2(self):
-        
         [patterns, designs] = parse_input("test_input.txt")
         self.assertEqual(16, part2_process(patterns, designs))
         pass
