@@ -54,28 +54,32 @@ def part2_process(patterns: list, designs: list) -> int:
 '''
 HELPER
 '''
-def is_valid(patterns:list , design: str, CACHE: map) -> bool:
+def is_valid(patterns:list , design: str, memo: map) -> bool:
     
     res = 0
 
+    if memo.get(design) is not None:
+        return memo.get(design)
+
     if design == '':
-        return 1
+        return 0
 
-    if CACHE.get(design) is not None:
-        return CACHE.get(design)
-
+    t = 0
     for pattern in patterns:
+        
         if design.endswith(pattern):
-            t = is_valid(patterns, design[:-len(pattern)], CACHE)
+            t = ((1 if pattern == design else 0) + 
+                is_valid(patterns, design[:-len(pattern)], memo))
             res += t
-            if t != 0:
-                cache(CACHE, design, t)      
+            
+    if t != 0:
+        memoize(memo, design, res)      
 
     return res
 
 
-def cache(CACHE, design, val):
-    if CACHE.get(design) is None:
-        CACHE[design] = 0
+def memoize(memo, design, val):
+    if memo.get(design) is None:
+        memo[design] = 0
 
-    CACHE[design] += val 
+    memo[design] = val 
