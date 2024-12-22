@@ -39,11 +39,15 @@ def part2_process(secrets: list) -> int:
     idx = 0
     for res in buyers:	
         
+        grps = {}
         for i in range(1, len(res) - 4):
     
             grp = (res[i][1], res[i + 1][1], 
                    res[i + 2][1], res[i + 3][1])
             
+            if grps.get(grp):
+                continue
+            grps[grp] = True
             if mp.get(grp) is None:
                 # 4 buyers, assume we need at least
                 # 3 entries. if idx is 2 and there
@@ -54,16 +58,9 @@ def part2_process(secrets: list) -> int:
             
             key = res[i + 3][0]
             if mp[grp].get(key) is None:
-                mp[grp][key] = []
+                mp[grp][key] = 0
 
-            lsts = mp[grp]
-            found = False
-            for l in lsts:
-                if idx in lsts[l]:
-                    found = True
-                    break
-            if (found == False):
-                mp[grp][key].append(idx)
+            mp[grp][key] += 1
             
             
         idx+=1
@@ -77,7 +74,7 @@ def part2_process(secrets: list) -> int:
         
         s = 0
         for e in entries:
-            s += e * len(entries[e])
+            s += e * entries[e]
         
         if s > max:
             max = s
