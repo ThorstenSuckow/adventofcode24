@@ -1,8 +1,7 @@
 from fileinput import input
 from operator import xor
 import re
-import time
-import copy
+
 def parse_input(file_name = "") -> map:
 
     if not file_name:
