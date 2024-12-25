@@ -18,7 +18,7 @@ class Test(unittest.TestCase):
 
     
     def test_process_part2(self):
-        #self.assertEqual('co,de,ka,ta', part2_process(parse_input('test_input.txt')))
+        self.assertEqual(0, part2_process(*parse_input('test_input.txt')))
         pass
 
 
